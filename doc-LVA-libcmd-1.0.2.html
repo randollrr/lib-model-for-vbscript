@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>libutil API</title>
+<style type="text/css">
+<!--
+.style11 {font-size: 12px}
+.style14 {
+	font-size: 12px;
+	font-family: "Courier New", Courier, mono;
+}
+.style19 {font-family: "Times New Roman", Times, serif}
+.style20 {font-size: 14px; }
+-->
+</style>
+</head>
+
+<body>
+<table width="740" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><h1 class="style19">Framework: Load other VBScripts as APIs </h1>
+      <h2 class="style19">libutil-1.0.0.vbs</h2>
+      <p><span class="style20">In order to promote </span><span class="style14">libutil-1.0.0.vbs</span> <span class="style20">is a VBScript Component that assembles the most commonly used routine for software deployment scripting. This document will demonstration some practical usage for the methods that are available in this script API.</span></p>
+      <ul><li class="style11"><a href="#settings">Basic setting (log, WScript object, etc...)</a></li>
+        <li class="style11"><a href="#instance">Create an instance in your script</a></li>
+        <li class="style11"><span class="style11"><a href="#">Built-in Methods</a>:
+            </span>
+          <ul>
+            <li class="style11"><a href="#">checkPath(...)</a></li>
+              <li class="style11"><a href="#">copyFile(...)</a></li>
+              <li class="style11"><a href="#">copyFolder(...)</a></li>
+              <li class="style11"><a href="#">deleteFile(...)</a></li>
+              <li class="style11"><a href="#">deleteFolder(...)</a></li>
+              <li class="style11"><a href="#">fileVer(...)</a></li>
+              <li class="style11"><a href="#">getCDSAppId()</a></li>
+              <li class="style11"><a href="#">getCDSGroundupId()</a></li>
+              <li class="style11"><a href="#">getDate()</a></li>
+              <li class="style11"><a href="#">getEnvar(...)</a></li>
+              <li class="style11"><a href="#">getOSType()</a></li>
+              <li class="style11"><a href="#">getOSVersion()</a></li>
+              <li class="style11"><a href="#">getTime()</a></li>
+              <li class="style11"><a href="#">logger(...)</a></li>
+              <li class="style11"><a href="#">msgLog(...)</a></li>
+              <li class="style11"><a href="#">removeEnvar(...)</a></li>
+              <li class="style11"><a href="#">regDelete(...)</a></li>
+              <li class="style11"><a href="#">regRead(...)</a></li>
+              <li class="style11"><a href="#">regWrite(...)</a></li>
+              <li class="style11"><a href="#">runCommand(...)</a></li>
+              <li class="style11"><a href="#">service(...)</a></li>
+              <li class="style11"><a href="#">setEnvar(...)</a></li>
+              <li class="style11"><a href="#">setRunOnce(...)</a></li>
+              <li class="style11"><a href="#">setWSH(...)</a></li>
+          </ul>
+        </li>
+      </ul>
+      <h2 id="settings">Basic settings for your  script file </h2>
+      <p class="style20">The following is an example of basic settings you can use to implement your script while using the common-tasks-1.2.wsc component. </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+                    &nbsp;&nbsp;&nbsp;'*******************************************************************<br>
+&nbsp;&nbsp;&nbsp;'* File: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;scriptname&gt;.vbs <br>
+&nbsp;&nbsp;&nbsp;'* Author:&nbsp;&nbsp;&nbsp;&nbsp; &lt;myname&gt; <br>
+&nbsp;&nbsp;&nbsp;'* Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;created&gt; <br>
+&nbsp;&nbsp;&nbsp;'* Purpose: &nbsp;&nbsp;&nbsp;&lt;major task perform by this script&gt; <br>
+&nbsp;&nbsp;&nbsp;'* <br>
+&nbsp;&nbsp;&nbsp;'* Rev-Info: &nbsp;&nbsp;&lt;date&gt;/&lt;author&gt;, &lt;bugfix&gt; <br>
+&nbsp;&nbsp;&nbsp;'*******************************************************************<br>
+                      &nbsp;&nbsp;&nbsp;OPTION EXPLICIT<br>
+                      &nbsp;&nbsp;&nbsp;<br>
+                      (1)&nbsp;&nbsp;&nbsp;dim task : set task = GetObject("script:"&getCurrentPath()&"\common-tasks-1.2.wsc")<br>
+                      (2)&nbsp;&nbsp;&nbsp;task.logger &quot;C:\Program Files\DS\LOGS\my.log&quot; <br>
+
+                      &nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;                      <br>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;YOUR SCRIPT GOES HERE&gt; <br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;<br>
+(3)&nbsp;&nbsp;&nbsp;Function getCurrentPath()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim pathstr:pathstr=wscript.scriptfullname<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getCurrentPath=left(pathstr,len(pathstr)-len(wscript.scriptname)-1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End Function<br>
+&nbsp;&nbsp;<br>
+                    </p>
+                  </td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <ol>
+        <li class="style20"> To create an instance object of common-task-1.2.wsc component which, in this example, is located in the same directory where my script file is located. </li>
+        <li class="style20"> To create a log file to log every important action that occurs in my script and also to log the component behavior. </li>
+        <li class="style20"> The function getCurrentPath() returns the current directory where this script was launched. </li>
+      </ol>      
+      <h2 id="instance">Create an instance in your script </h2>
+      <p class="style20">One advantage with VBScript over Batch scripting is that it supports object-oriented programming features. </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+              <tr>
+                <td><p class="style14"><br>
+                  &nbsp;&nbsp;dim task<br>
+                  &nbsp;&nbsp;set task = GetObject("script:"&getCurrentDir&"\common-tasks-1.2.wsc")<br>
+                  <br>
+                </p>
+                  </td>
+              </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>      
+    <p class="style20">Voila, now you have a task object that is able to perform all routines that are available within the component. </p></td>
+  </tr>
+</table>
+</body>
+</html>
