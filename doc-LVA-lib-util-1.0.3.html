@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>libutil API</title>
+<style type="text/css">
+<!--
+.style11 {font-size: 12px}
+.style14 {
+	font-size: 12px;
+	font-family: "Courier New", Courier, mono;
+}
+.style19 {font-family: "Times New Roman", Times, serif}
+.style20 {font-size: 14px; }
+-->
+</style>
+</head>
+
+<body>
+<table width="740" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><h1 class="style19">&nbsp;</h1>
+      <h1 class="style19">Libutil-1.0.0.vbs </h1>
+      <p class="style11">&copy; Created in 2006 by Randoll REVERS. </p>
+      <hr size="1"/>
+      <h2 class="style19"> Contents</h2>
+      <ul>
+        <li class="style11"><a href="#intro">Intro</a></li>
+        <li class="style11"><a href="#settings">Basic setting (log, WScript object, etc...)</a></li>
+        <li class="style11">Available object:
+          <ul>
+            <li><a href="#fso">FSO</a></li>
+            <li><a href="#wso">WSO</a></li>
+            <li><a href="#so">SO</a></li>
+          </ul>
+        </li>
+        <li class="style11">Methods:
+          <ul>
+            <li><a href="#filever">fileVer()</a></li>
+            <li><a href="#getcurrentpath">getCurrentPath()</a></li>
+            <li><a href="#getenvar">getEnvar()</a></li>
+            <li><a href="#logger">logger()</a></li>
+            <li><a href="#path">Path()</a></li>
+            <li><a href="#msglog">msgLog()</a></li>
+            <li><a href="#removeenvar">removeEnvar()</a></li>
+            <li><a href="#setenvar">setEnvar()</a></li>
+            <li><a href="#setrunonce">setRunOnce()</a></li>
+          </ul>
+        </li>
+      </ul>  
+	  <hr size="1"/>
+      <h2 class="style19" id="intro">Intro: Utilities </h2>
+      <h3 class="style19">Framework: Load VBScript as APIs</h3>
+      <p><span class="style20">In the spirit of having reusable scripts/codes, we have developed the LVA framework (so I named it </span><span class="style14">:)</span><span class="style20">). </span><span class="style14">libutil-x.x.x.vbs </span>is the basic required VBScript file to be included in your script. It is a collection of the most commonly used routine for software deployment scripting. This document will demonstrate some practical usage for the methods that are available in this file.<br>
+        <br>
+        The benefit of using this model is based on the facts that  most of the functions implemented have the following features:</p>
+      <ol>
+        <li> They generate their own log entry. </li>
+        <li>They implement independant error handlers</li>
+        <li>And they can be optimized without changing the logic implemented in your scripts </li>
+      </ol>      
+      <p>&nbsp;</p>      <h2 id="settings">Basic settings for your  script file </h2>
+      <p class="style20">The following is an example of basic settings you can use to implement your script using the LVA methodology:</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;'*******************************************************************<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* File: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;scriptname&gt;.vbs <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* Author:&nbsp;&nbsp;&nbsp;&nbsp; &lt;my initials&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;created&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* Purpose: &nbsp;&nbsp;&nbsp;&lt;major task perform by this script&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'* Rev-Info: &nbsp;&nbsp;&lt;date&gt;/&lt;author&gt;, &lt;bugfix&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'*******************************************************************<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp;OPTION EXPLICIT<br>
+                      &nbsp;&nbsp;&nbsp;<br>
+                      (2)&nbsp;Execute library( &quot;libutil-1.0.0.vbs&quot;)<br>
+                      <br>
+                      (3)&nbsp;&nbsp;&nbsp;&nbsp;logger &quot;C:\Program Files\DS\LOGS\my.log&quot;<br>
+                      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msgLog &quot;Running &lt;scriptname&gt;.vbs&quot; &nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;                      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'&lt;YOUR SCRIPT GOES HERE&gt; <br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msgLog &quot;Done. (&lt;scriptname&gt;.vbs)&quot;<br>
+  <br>
+  <br>
+  <br>
+  (1)&nbsp;&nbsp;&nbsp;&nbsp;Function library( libname)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dim libf : set libf = CreateObject(&quot;Scripting.FileSystemObject&quot;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if not libf.fileExists( libname) then WScript.StdOut.Write _<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot; Error: Could not locate library: &quot;&amp;libname : WScript.Quit( 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;library = libf.OpenTextFile( libname, 1).ReadAll()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End Function<br>
+&nbsp;&nbsp;<br>
+                  </p>
+                  </td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <ol>
+        <li class="style20">Use the library() funciton to load your .vbs file </li>
+        <li class="style20">Use the Execute keyword to load a .vbs file-based library in memory </li>
+        <li class="style20"> At this point you can start scripting and use the library's functions in your script </li>
+      </ol>      
+      <p>&nbsp;</p>      
+      <h2 id="instance">Available Objects </h2>
+      <h3 class="style20" id="fso">FSO</h3>
+      <p class="style20">FSO is an instance of WSH file system object for the current system the script is running on. To open a text file do the following: </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;dim file : file = FSO.OpenTextFile( "text.txt", FSO_READ)<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+        <p>Open method constants:<br>
+          <span class="style14">&nbsp;&nbsp;&nbsp;FSO_APPENDING<br>
+&nbsp;&nbsp;&nbsp;FSO_WRITE<br>
+&nbsp;&nbsp;&nbsp;FSO_READ</span></p>
+      </blockquote>
+      <h3 class="style20" id="wso">WSO</h3>
+      <p class="style20">WSO is an instance of WSH object library for the current system the script is running on.  To use this object, you only need to do the following:</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;exitCode = WSO.Run( "cmd /c notepad.exe ", 0, true) <br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="so">SO</h3>
+      <p class="style20">SO is an instance of WMI object for the current system the script is running on.  For example, to get a collection of service objects running on your system, you only need to do the following:</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;dim serviceCollection : set serviceCollection = SO.InstancesOf( &quot;Win32_Service&quot;)<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <h2>Methods</h2>
+      <h3 class="style20" id="filever">fileVer()</h3>
+      <p class="style20">This function returns the file version (i.e. <span class="style14">3.1.4000.1823</span>) of the specified file, if applicable.</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+              <tr>
+                <td><p class="style14"><br>
+                  &nbsp;&nbsp;&nbsp;dim msiVersion : msiVersion = fileVer( "C:\Windows\System32\msiexec.exe")<br>
+                  <br>
+                </p>
+                  </td>
+              </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>      
+      <h3 class="style20" id="getcurrentpath">getCurrentPath()</h3>
+      <p class="style20">This function returns the path where the script is located. Even if your script is launched remotely or from a different directory, the current path for your script will always be the same. Use as follow: </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;loe.copyFile getCurrentPath()&amp;"\my.log", &quot;C:\Program Files\DS\Logs\&quot; <br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="getenvar">getEnvar()</h3>
+      <p class="style20">This function retrieve a local environment variable, e.g:</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;WScript.Echo getEnvar( "ComputerName")</p>
+                    <p class="style14">&nbsp;&nbsp;&nbsp;WScript.Echo getEnvar( "SystemRoot")<br>
+                      <br>
+                    </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="logger">logger()</h3>
+      <p class="style20">Use this function to set the name and path of your log file. If you never set the log filename during the lifecycle of your script no logs will be created, although most of functions herein creates logs entries. Always set your log before you do anything else in your script, as follow: </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;logger &quot;C:\Program Files\DS\LOGS\my.log&quot;<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="path">Path()</h3>
+      <p class="style20">This function is the most useful function implemented here in my opinion. It does the following: </p>
+      <ol>
+        <li class="style20">It checks a directory path</li>
+        <li class="style20">It checks a specified file with a specific path (validates path) or without a specific path (assumes file is local)</li>
+        <li class="style20">It can create a path if it doesn't exist (at any level in that specified path) </li>
+      </ol>      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;dim FilePathExist : FilePathExist = Path( "C:\Program Files\DS\LOGS\my.log", true*)<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+        <span class="style11">* Second parameter is set to true to create the directories if missing. (Do not use the asterisk in your codes.) </span><br>
+        <p><span class="style20">Note on return codes:</span><span class="style14"><br>
+&nbsp;&nbsp;&nbsp;1. File exist. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return value: P_FILE_OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;example: Path( &quot;my.log&quot;) </span></p>
+        <p><span class="style14">&nbsp;&nbsp;&nbsp;2. Directory exist. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return value: P_DIR_OK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;example: Path( &quot;C:\Program Files\DS\LOGS\&quot;) </span></p>
+        <p><span class="style14">&nbsp;&nbsp;&nbsp;3. Directory exist, File exist.<br>
+&nbsp;&nbsp; &nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">return value: P_DIR_OK_FILE_OK&nbsp;&nbsp;&nbsp;&nbsp;example: Path( &quot;C:\Program Files\DS\LOGS\my.log&quot;) </span></p>
+        <p><span class="style14">&nbsp;&nbsp;&nbsp;3. Directory exist, but File is missing.<br>
+&nbsp;&nbsp; &nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">return value: P_DIR_OK_FILE_NOT&nbsp;&nbsp;&nbsp;example: Path( &quot;C:\Program Files\DS\LOGS\your.log&quot;) </span></p>
+        <p><span class="style14">&nbsp;&nbsp;&nbsp;4. Directory does not exist as well as the File. </span><br>
+        <span class="style20"><span class="style14">&nbsp;&nbsp; &nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">&nbsp;</span><span class="style14">return value: P_DIR_NOT_FILE_NOT&nbsp;&nbsp;example: Path( &quot;C:\TMP\some.log&quot;) </span></span></p>
+        <p><span class="style20">Limitation: </span><br>
+          <span class="style20">&nbsp;&nbsp;&nbsp;Directories are expected to end with a forward slash (\), otherwise the last token in path is assumed to be a file. </span></p>
+      </blockquote>
+      <h3 class="style20" id="msglog">msgLog()</h3>
+      <p class="style20">Depends on the filename set by the <span class="style14">logger</span> function, <span class="style14">msgLog</span> tries to append an entry in the current log file.</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;msgLog &quot;Running my.vbs&quot;</p>
+                    <p class="style14">Log file entry looks like this:<br>
+                      &nbsp;&nbsp;&nbsp;12/14/2006 12:14:00 PM -- Running my.vbs<br>
+                      <br>
+                  </p>
+                  </td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+        <p>Features: <br>
+        <span class="style14">&nbsp;&nbsp;&nbsp;&quot;&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; writes blank line with no time stamp<br>
+        &nbsp;&nbsp;&nbsp;&quot;!Service stopped.&quot; -&gt; boxed message [Service stopped.] </span>        </p>
+      </blockquote>
+      <h3 class="style20" id="removeenvar">removeEnvar()</h3>
+      <p class="style20">Remove an environment variable for the current process.</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;removeEnvar( &quot;BKENV&quot;) <br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="setenvar">setEnvar()</h3>
+      <p class="style20">Set Process level environment variable (variables will be available for .cmd or other vbscript file). </p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;setEnvar( &quot;BKENV&quot;, &quot;PFT&quot;)<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+      <h3 class="style20" id="setrunonce">setRunOnce()</h3>
+      <p class="style20">Set register key  RunOnce to value specified.</p>
+      <blockquote>
+        <table width="640" border="0" cellspacing="0" cellpadding="1">
+          <tr>
+            <td bgcolor="#999999"><table width="640" border="0" cellpadding="0" cellspacing="0" bgcolor="#CCCCCC">
+                <tr>
+                  <td><p class="style14"><br>
+&nbsp;&nbsp;&nbsp;setRunOnce( &quot;BkInst&quot;, &quot;E:\Bk10Inst.cmd&quot;)<br>
+                <br>
+                  </p></td>
+                </tr>
+            </table></td>
+          </tr>
+        </table>
+      </blockquote>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
