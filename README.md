@@ -3,29 +3,21 @@ LVA
 
 Better Structured VBScript by loading other VBScript files as your API.
 
+******************************************************************************
 
-'******************************************************************************
-'* File:    <scriptname>.vbs 
-'* Author:  <my initials> 
-'* Date:    <created> 
-'* Purpose: <major task perform by this script> 
-'* 
-'* Rev-Info: <date>/<author>, <bugfix> 
-'******************************************************************************
 OPTION EXPLICIT
 
    Execute library( "lib-utility-1.0.4.vbs")
-
+   
    '---BEGIN--------------------------------------
    logger left(getScriptName(),len(getScriptName())-4)&".log" : msgLog "" '-- blank line
-   msgLog "Running... ("&getScriptName()&")" 
-
-
+   msgLog "Running... ("&getScriptName()&")"
+   
    '<YOUR SCRIPT GOES HERE>
-
-
+   
    '-- fini
    ExitProcess Null, 0
+
    '---END----------------------------------------
 
 
